@@ -1,0 +1,36 @@
+h1 {
+  padding: 1rem 2rem;
+  border-left: 10px solid 	#53E5DE;
+  background: white;
+	color: black;
+}
+
+body {
+background-color: #e5ffff;
+}
+p {
+font-size: 20px;
+color: black;
+background-color: white;
+padding:30px;
+border-top: solid 3px #6EB8B6;
+border-bottom: solid 3px #6EB8B6;
+}
+
+p1 {
+font-size: 17px;
+display: block;
+}
+
+button {
+  width:100px;
+  font-size:17px;
+  color:white;
+	border:1px white;
+  text-align:center;
+  padding:10px 0 10px;
+	margin:20px;
+  background:#5FD8D2;
+  border-radius:10px;
+  box-shadow:3px 3px #555555;
+}
