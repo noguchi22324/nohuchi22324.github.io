@@ -34,11 +34,20 @@
 // 応答の定義（ハッシュ）    
 
 var response = {
-    "あなたは誰ですか":"わたしはアレクサではありません",
-    "何歳ですか":"え、わたし、何歳にみえますか",
-    "元気ですか":"元気ですよー",
-    "好きな食べ物は":"焼肉です"
+    ".*あなた.*誰.*": "わたしはアレクサではありません",
+    ".*名前は.*": "内緒です",
+    ".*何歳.*": "え、わたし、何歳にみえますか",
+    ".*元気.*": "元気ですよー",
+    ".*好きな.*色.*": "オレンジです",
+    ".*夢は.*": "世界を冒険することです",
+    ".*好きな.*スポーツ.*": "けん玉です",
+    ".*好きな.*食べ物.*": "焼肉です",
+    ".*和歌山.*天気.*": "和歌山の天気はたぶん晴れでしょう",
+    ".*大阪.*天気.*": "大阪の天気は雨です。",
+    ".*明日.*天気.*": "明日の天気は曇りだと思います",
+    ".*明日.*和歌山.*天気.*": "明日の和歌山の天気はずばり雪です"
 };
+
 
 const questionButton = document.querySelector('#questionButton'); // 開始ボタン
 const stopButton = document.querySelector('#stopButton'); // 停止ボタン
@@ -69,14 +78,28 @@ let output = ''; // 出力
 // 認識結果が出力されたときのイベントハンドラ
 asr.onresult = function(event){
     let transcript = event.results[event.resultIndex][0].transcript; // 結果文字列
-		
+
     let output_not_final = '';
     if (event.results[event.resultIndex].isFinal) { // 結果が確定（Final）のとき
 	    asr.abort(); // 音声認識を停止
-            output = output + transcript + " => " + response[transcript] + '<br>';
-            
-	    tts.text = response[transcript];
 	    
+        let answer;
+        
+        let keys = Object.keys(response);
+        keys.forEach(function(key) {
+            if(new RegExp(key).test(transcript)){ // 正規表現をtestしてtrue or false
+		        answer = response[key];
+                console.log(key + " : " + answer);
+            }
+        });
+
+        if(typeof answer == 'undefined'){
+	        answer = "ごめんなさい。わかりません。";
+    	}
+	
+        output += transcript + ' => ' + answer + '<br>';
+
+	    tts.text = answer;
 	    // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
 	    tts.onend = function(event){
 	        asr.start(); // 音声認識を再開
@@ -87,9 +110,8 @@ asr.onresult = function(event){
         output_not_final = '<span style="color:#ddd;">' + transcript + '</span>';
     }
     resultOutput.innerHTML = output + output_not_final;
-    
-
 }
+
 
 
 // 開始ボタンのイベントハンドラ
