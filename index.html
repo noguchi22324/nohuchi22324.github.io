@@ -14,14 +14,15 @@
 
 <p>
 <p1>
-これは音声対話システムです。
-例）りんごの英単語は？
+私と英会話を行って、英会話力を高めましょう！
+好きな難易度を設定してください。
 </p1>
 
 <p2>
 <button id="questionButton">質問</button>
 <button id="stopButton">停止</button>
-<button id="speakButton">English</button>
+<button id="easyButton">簡単</button>
+<button id="hardButton">難しい</button>
 
 </p2>
 
@@ -50,7 +51,9 @@ var response = {
     ".*和歌山.*天気.*": "和歌山の天気はたぶん晴れでしょう",
     ".*大阪.*天気.*": "大阪の天気は雨です。",
     ".*明日.*天気.*": "明日の天気は曇りだと思います",
-    ".*明日.*和歌山.*天気.*": "明日の和歌山の天気はずばり雪です"
+    ".*name.*is.*": "That's a nice name.What is your favorite color?",
+    ".*color.*is.*": "I like this color too!",
+    ".*it.*":"What is his/her occupation?"
 };
 
 
@@ -63,8 +66,8 @@ if (!'SpeechSynthesisUtterance' in window) {
 }
 const tts = new SpeechSynthesisUtterance(); // TTSインスタンスを生成
 //tts.text = textForm.value; // テキストを設定
-tts.lang = "ja-JP"; // 言語(日本語)、英語の場合はen-US
-tts.rate = 1.0; // 速度
+tts.lang = "en-US"; // 言語(日本語)、英語の場合はen-US
+tts.rate = 0.8; // 速度
 tts.pitch = 1.0; // 声の高さ
 tts.volume = 1.0; // 音量
 
@@ -74,27 +77,50 @@ if (!'SpeechRecognition' in window) {
 }
 
 const asr = new SpeechRecognition(); // ASRインスタンスを生成
-asr.lang = "ja-JP"; // 言語（日本語）
+asr.lang = "en-US"; // 言語（日本語）
 asr.interimResults = true; // 途中結果出力をオン
 asr.continuous = true; // 継続入力をオン
 
 let output = ''; // 出力
 
-// 再生ボタンをクリックしたときのイベントハンドラ
-speakButton.addEventListener('click', function(){
+// 簡単ボタンをクリックしたときのイベントハンドラ
+easyButton.addEventListener('click', function(){
     const tts = new SpeechSynthesisUtterance(); // TTSインスタンスを生成
-    tts.text = "Hello.Please tell me question?"; // テキストを設定
+    tts.text = "Hello.please intoroduce yourself."; // テキストを設定
     tts.lang = "en-US"; // 言語(日本語)、英語の場合はen-US
     tts.rate = 0.8; // 速度
     tts.pitch = 1.0; // 声の高さ
     tts.volume = 1.0; // 音量
 
+
     // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
     tts.onend = function(event){
-	alert("終わりました！");
+        //再生後に質問の文が表示される
+        resultOutput.innerHTML += tts.text
     }
-
     speechSynthesis.speak(tts); // 再生
+
+    asr.start();
+})
+
+// 普通ボタンをクリックしたときのイベントハンドラ
+hardButton.addEventListener('click', function(){
+    const tts = new SpeechSynthesisUtterance(); // TTSインスタンスを生成
+    tts.text = "Who do you admire?"; // テキストを設定
+    tts.lang = "en-US"; // 言語(日本語)、英語の場合はen-US
+    tts.rate = 0.8; // 速度
+    tts.pitch = 1.0; // 声の高さ
+    tts.volume = 1.0; // 音量
+
+
+    // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
+    tts.onend = function(event){
+        //再生後に質問の文が表示される
+        resultOutput.innerHTML += tts.text
+    }
+    speechSynthesis.speak(tts); // 再生
+
+    asr.start();
 })
 
 
