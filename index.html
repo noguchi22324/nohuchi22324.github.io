@@ -24,13 +24,19 @@
 <button id="easyButton">簡単</button>
 <button id="hardButton">難しい</button>
 
-</p2>
 
+</p2>
+<img src = "girl.png">
 
 <p3>
 <div id="resultOutput"></div>
 </p3>
 </p>
+
+<div class="region">
+    <button type="radio" name="language" id="ja" value="ja-JP" checked><label for="ja">Japanese</label>
+    <button type="radio" name="language" id="en" value="en-US"><label for="en">English</label>
+</div>
 
 <script>
 
@@ -143,7 +149,7 @@ asr.onresult = function(event){
         });
 
         if(typeof answer == 'undefined'){
-	        answer = "ごめんなさい。わかりません。";
+	        answer = "Can you say that again?";
     	}
 	
         output += transcript + ' => ' + answer + '<br>';
