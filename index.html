@@ -10,58 +10,61 @@
 </head>
 <body>
 
+<header>
 <h1>音声対話学習システム</h1>
+</header>
 
 <p>
 <div class = "balloon">
-<p1>
+<p1 id  = "explain">
 私と英会話を行って、英会話力を高めましょう！
 好きな難易度を設定してください。
 </p1>
 </div>
 
-<p2>
-<button id="questionButton">質問</button>
-<button id="stopButton">停止</button>
-<button id="easyButton">簡単</button>
-<button id="hardButton">難しい</button>
+<div class = "girl">
+    <img src = "girl.png">
 
+
+<p2>
+<button id="questionButton">質問する</button>
+<button id="stopButton">停止</button>
+<button id="easyButton">会話する</button>
+</div>
 
 </p2>
-<img src = "girl.png">
 
+
+<div class="record">
 <p3>
-<div id="resultOutput"></div>
+    会話の履歴
+    <div id="resultOutput"></div>
 </p3>
-</p>
-
-<div class="region">
-    <button type="radio" name="language" id="ja" value="ja-JP" checked><label for="ja">Japanese</label>
-    <button type="radio" name="language" id="en" value="en-US"><label for="en">English</label>
 </div>
+
+
+</p>
 
 <script>
 
 
 // 応答の定義（ハッシュ）    
 
-var response = {
-    ".*あなた.*誰.*": "わたしはアレクサではありません",
-    ".*名前は.*": "内緒です",
-    ".*りんご.*英単語.*": "apple",
-    ".*名前.*英単語.*": "name",
-    ".*何歳.*": "え、わたし、何歳にみえますか",
-    ".*元気.*": "元気ですよー",
-    ".*好きな.*色.*": "オレンジです",
-    ".*夢は.*": "世界を冒険することです",
-    ".*好きな.*スポーツ.*": "けん玉です",
-    ".*好きな.*食べ物.*": "焼肉です",
-    ".*和歌山.*天気.*": "和歌山の天気はたぶん晴れでしょう",
-    ".*大阪.*天気.*": "大阪の天気は雨です。",
-    ".*明日.*天気.*": "明日の天気は曇りだと思います",
-    ".*name.*is.*": "That's a nice name.What is your favorite color?",
-    ".*color.*is.*": "I like this color too!",
-    ".*it.*":"What is his/her occupation?"
+var response = {    //質問
+    ".*you.*": "It's a secret.",
+    ".*what.*": "It's a secret.",
+    ".*what.*your.*": "I'm Emma",
+    ".*How old.*you.*": "I am 18 years old.",
+    ".*How.*you.*": "I'm fine thank you and you?",
+    ".*you.*like.*color.*": "I like the orange color.",
+    ".*dream.*": "My dream is to become a school teacher.",
+    ".*I.*":"It is nice!",
+    ".*My.*name.*": "That's a nice name.What is your favorite color?",
+    ".*I am.*": "That's a nice name.What is your favorite color?",
+    ".*I.*like.*": "I also like it too! Tell us more.",
+    ".*color.*is.*": "I like the orange color! Do you have any family?",
+    ".*My.*family.*": "I have a younger sister. What are your hobbies?",
+    ".*My.*hobby.*is.*": "I'd like to do that too."
 };
 
 
@@ -104,39 +107,19 @@ easyButton.addEventListener('click', function(){
     // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
     tts.onend = function(event){
         //再生後に質問の文が表示される
-        resultOutput.innerHTML += tts.text
+        document.getElementById("explain").innerHTML = tts.text
+        //resultOutput.innerHTML += tts.text
     }
     speechSynthesis.speak(tts); // 再生
 
     asr.start();
 })
-
-// 普通ボタンをクリックしたときのイベントハンドラ
-hardButton.addEventListener('click', function(){
-    const tts = new SpeechSynthesisUtterance(); // TTSインスタンスを生成
-    tts.text = "Who do you admire?"; // テキストを設定
-    tts.lang = "en-US"; // 言語(日本語)、英語の場合はen-US
-    tts.rate = 0.8; // 速度
-    tts.pitch = 1.0; // 声の高さ
-    tts.volume = 1.0; // 音量
-
-
-    // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
-    tts.onend = function(event){
-        //再生後に質問の文が表示される
-        resultOutput.innerHTML += tts.text
-    }
-    speechSynthesis.speak(tts); // 再生
-
-    asr.start();
-})
-
 
 // 認識結果が出力されたときのイベントハンドラ
 asr.onresult = function(event){
     let transcript = event.results[event.resultIndex][0].transcript; // 結果文字列
-
     let output_not_final = '';
+
     if (event.results[event.resultIndex].isFinal) { // 結果が確定（Final）のとき
 	    asr.abort(); // 音声認識を停止
 	    
@@ -153,20 +136,20 @@ asr.onresult = function(event){
         if(typeof answer == 'undefined'){
 	        answer = "Can you say that again?";
     	}
-	
-        output += transcript + ' => ' + answer + '<br>';
 
+        //document.getElementById("explain").innerHTML = answer;	
+        output += transcript + ' => ' + answer + '<br>';
 	    tts.text = answer;
 	    // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
 	    tts.onend = function(event){
 	        asr.start(); // 音声認識を再開
 	    }
-
 	    speechSynthesis.speak(tts); // 再生
     } else { // 結果がまだ未確定のとき
         output_not_final = '<span style="color:#ddd;">' + transcript + '</span>';
     }
     resultOutput.innerHTML = output + output_not_final;
+    
 }
 
 
@@ -181,6 +164,14 @@ stopButton.addEventListener('click', function() {
     asr.abort();
     asr.stop();
 })
+
+//吹き出しの文字変更
+document.getElementById("questionButton").onclick = function() {
+    document.getElementById("explain").innerHTML = " 好きに質問してください。（例）what is your name?"
+}
+document.getElementById("easyButton").onclick = function() {
+    document.getElementById("explain").innerHTML = "自己紹介の練習をしましょう。（例）my name is Mike."
+}
 
 </script>
 
