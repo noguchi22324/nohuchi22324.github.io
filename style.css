@@ -1,20 +1,21 @@
 h1 {
   padding: 1rem 2rem;
   border-left: 10px solid 	#53E5DE;
-  background: white;
+  background: #855a3e;
 	color: black;
 }
 
 body {
-background-color: #e5ffff;
+background-color: #fef7c9;
+font-family:"メイリオ","ヒラギノ角ゴ Pro W3";
 }
 p {
 font-size: 20px;
 color: black;
-background-color: white;
+background-color: ;
 padding:30px;
-border-top: solid 3px #6EB8B6;
-border-bottom: solid 3px #6EB8B6;
+border-top: solid 3px #edcf89;
+border-bottom: solid 3px #edcf89;
 }
 
 p1 {
@@ -30,7 +31,36 @@ button {
   text-align:center;
   padding:10px 0 10px;
 	margin:20px;
-  background:#5FD8D2;
+  background: #bdd982;;
   border-radius:10px;
-  box-shadow:3px 3px gray;
+  box-shadow:3px 3px #bfbbba;
 }
+
+img{
+  width: 200px;
+  height: 200px;
+  padding-left: 70%;
+  padding-right: auto;
+}
+
+.balloon {
+  position: relative;
+  background-color: white;
+  padding: 10px;
+  color: #333;
+  border-radius: 10px;
+  }
+  
+  .balloon::before {
+  content: "";
+  position: absolute;
+  border: 12px solid transparent;
+  border-top: 12px solid white;
+  top: 100%;
+  right: 5%;
+  }
+  
+  .balloon p {
+  margin: 0;
+  padding: 0;
+  }
