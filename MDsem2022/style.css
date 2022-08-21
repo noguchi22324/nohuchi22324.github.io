@@ -1,0 +1,95 @@
+body{
+    font-family: 'メイリオ';
+}
+
+div.consept{
+	padding: 100px;
+}
+
+
+header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	line-height: 30px;
+	background: white;
+	z-index:10;
+	float:none;
+
+}
+
+a.nav-link{
+    color: black;
+
+}
+
+nav{
+    display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	line-height: 20px;
+	background: #BDD982;
+	padding-top: 10px;
+}
+
+
+/* ロゴ */
+header .logo {
+	padding: 0 20px;
+	font-size: 18px;
+	color: #fff;
+	letter-spacing: .2em;
+}
+/* メニューボタン */
+header .menu {
+	position: relative;
+	width: 60px;
+	height: 60px;
+	cursor: pointer;
+}
+header .menu span {
+	display: block;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	width: 30px;
+	height: 2px;
+	margin: auto;
+	background: #fff;
+}
+header .menu span:nth-of-type(1) {
+	transform: translateY(-10px);
+}
+header .menu span:nth-of-type(3) {
+	transform: translateY(10px);
+}
+p.card-text{
+	font-size: 13px;
+	color: gray;
+}
+h2{
+	font-size:x-large;
+}
+div.product{
+	max-width: 90%;
+	padding-left: 50px;
+}
+h1{
+	margin: 10px;
+}
+button{
+	max-height: 50px;
+	margin-left:10px;
+	margin: 5px;
+}
+div.top{
+	margin: 64px;
+}
+p.text{
+	text-align:center;
+	padding-top: 10px;
+}
