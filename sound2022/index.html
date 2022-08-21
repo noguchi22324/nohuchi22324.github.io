@@ -1,0 +1,179 @@
+<html lang="ja">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<meta charset="UTF-8">
+<title>Spoken Dialog by Javascript</title>
+<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+
+<header>
+<h1>音声対話学習システム</h1>
+</header>
+
+<p>
+<div class = "balloon">
+<p1 id  = "explain">
+私と英会話を行って、英会話力を高めましょう！
+好きな難易度を設定してください。
+</p1>
+</div>
+
+<div class = "girl">
+    <img src = "girl.png">
+
+
+<p2>
+<button id="questionButton">質問する</button>
+<button id="stopButton">停止</button>
+<button id="easyButton">会話する</button>
+</div>
+
+</p2>
+
+
+<div class="record">
+<p3>
+    会話の履歴
+    <div id="resultOutput"></div>
+</p3>
+</div>
+
+
+</p>
+
+<script>
+
+
+// 応答の定義（ハッシュ）    
+
+var response = {    //質問
+    ".*you.*": "It's a secret.",
+    ".*what.*": "It's a secret.",
+    ".*what.*your.*": "I'm Emma",
+    ".*how old.*you.*": "I am 18 years old.",
+    ".*how.*you.*": "I'm fine thank you and you?",
+    ".*you.*like.*color.*": "I like the orange color.",
+    ".*dream.*": "My dream is to become a school teacher.",
+    ".*I.*":"It is nice!",
+    ".*my.*name.*": "That's a nice name.What is your favorite color?",
+    ".*I am.*": "That's a nice name.What is your favorite color?",
+    ".*I.*like.*": "I also like it too! Tell us more.",
+    ".*color.*is.*": "I like the orange color! Do you have any family?",
+    ".*my.*family.*": "I have a younger sister. What are your hobbies?",
+    ".*my.*hobby.*is.*": "I'd like to do that too."
+};
+
+
+const questionButton = document.querySelector('#questionButton'); // 開始ボタン
+const stopButton = document.querySelector('#stopButton'); // 停止ボタン
+const resultOutput = document.querySelector('#resultOutput'); // 結果出力エリア
+
+if (!'SpeechSynthesisUtterance' in window) {
+    alert("あなたのブラウザはSpeech Synthesis APIに未対応です。");
+}
+const tts = new SpeechSynthesisUtterance(); // TTSインスタンスを生成
+//tts.text = textForm.value; // テキストを設定
+tts.lang = "en-US"; // 言語(日本語)、英語の場合はen-US
+tts.rate = 0.8; // 速度
+tts.pitch = 1.0; // 声の高さ
+tts.volume = 1.0; // 音量
+
+SpeechRecognition = webkitSpeechRecognition || SpeechRecognition;
+if (!'SpeechRecognition' in window) {
+    alert("あなたのブラウザはSpeech Recognition APIに未対応です。");
+}
+
+const asr = new SpeechRecognition(); // ASRインスタンスを生成
+asr.lang = "en-US"; // 言語（日本語）
+asr.interimResults = true; // 途中結果出力をオン
+asr.continuous = true; // 継続入力をオン
+
+let output = ''; // 出力
+
+// 簡単ボタンをクリックしたときのイベントハンドラ
+easyButton.addEventListener('click', function(){
+    const tts = new SpeechSynthesisUtterance(); // TTSインスタンスを生成
+    tts.text = "Hello.please intoroduce yourself."; // テキストを設定
+    tts.lang = "en-US"; // 言語(日本語)、英語の場合はen-US
+    tts.rate = 0.8; // 速度
+    tts.pitch = 1.0; // 声の高さ
+    tts.volume = 1.0; // 音量
+
+
+    // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
+    tts.onend = function(event){
+        //再生後に質問の文が表示される
+        document.getElementById("explain").innerHTML = tts.text
+        //resultOutput.innerHTML += tts.text
+    }
+    speechSynthesis.speak(tts); // 再生
+
+    asr.start();
+})
+
+// 認識結果が出力されたときのイベントハンドラ
+asr.onresult = function(event){
+    let transcript = event.results[event.resultIndex][0].transcript; // 結果文字列
+    let output_not_final = '';
+
+    if (event.results[event.resultIndex].isFinal) { // 結果が確定（Final）のとき
+	    asr.abort(); // 音声認識を停止
+	    
+        let answer;
+        
+        let keys = Object.keys(response);
+        keys.forEach(function(key) {
+            if(new RegExp(key).test(transcript)){ // 正規表現をtestしてtrue or false
+		        answer = response[key];
+                console.log(key + " : " + answer);
+            }
+        });
+
+        if(typeof answer == 'undefined'){
+	        answer = "Can you say that again?";
+    	}
+
+        //document.getElementById("explain").innerHTML = answer;	
+        output += transcript + ' => ' + answer + '<br>';
+	    tts.text = answer;
+	    // 再生が終了（end）ときのイベントハンドラ（終了したときに実行される）
+	    tts.onend = function(event){
+	        asr.start(); // 音声認識を再開
+	    }
+	    speechSynthesis.speak(tts); // 再生
+    } else { // 結果がまだ未確定のとき
+        output_not_final = '<span style="color:#ddd;">' + transcript + '</span>';
+    }
+    resultOutput.innerHTML = output + output_not_final;
+    
+}
+
+
+
+// 開始ボタンのイベントハンドラ
+questionButton.addEventListener('click', function() {
+    asr.start();
+})
+
+// 停止ボタンのイベントハンドラ
+stopButton.addEventListener('click', function() {
+    asr.abort();
+    asr.stop();
+})
+
+//吹き出しの文字変更
+document.getElementById("questionButton").onclick = function() {
+    document.getElementById("explain").innerHTML = " 好きに質問してください。（例）what is your name?"
+}
+document.getElementById("easyButton").onclick = function() {
+    document.getElementById("explain").innerHTML = "自己紹介の練習をしましょう。（例）my name is Mike."
+}
+
+</script>
+
+</body>
+</html>
