@@ -1,0 +1,18 @@
+【出力するTF-IDF併記DR群の数の設定】
+・現状，300個出力
+・変更したい場合は，TF-IDF_RoughSets.pyを開き，
+　231行目：eel.js_func(core[:300], no_core[:300], list_4parts[:300], pf_uni_name)
+　3つの数字「300」を変更してください．
+
+【TF-IDF併記DR群を生成するのに用いる決定ルール数の設定】
+・現状，各決定クラスごとにC.I.値の上位100個ずつ使用
+・変更したい場合は，TF-IDF_RoughSets.pyを開き，
+　125行目：if len(sorted_rule) >= 100:
+  126行目：sorted_rule = sorted_rule[:100]
+　2つの数字「100」を変更してください．
+
+【決定クラスに関して】
+・現状，決定クラスは８種類まで対応
+・追加したい場合は，フォルダ「Output」内のfunction.jsを開き，
+　10行目の配列変数「color_code」にRGBカラーを追加して下さい．
+

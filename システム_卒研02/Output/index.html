@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+
+<body bgcolor="black">
+
+  <script type="text/javascript" src="/eel.js"></script>
+  <div id="outer">
+    <div id="side">
+      <label class="upload-label side_button">ファイルを選択<input id="upload_file" type="file" accept=".csv"></label>
+      <div class="popup" id="popup_id">
+        <div class="popup_inner">
+          <div class="close_btn" id="close_btn_id" onclick="work_popup()"></div>
+          <form name="result0">
+            <p class="result_text">決定属性（結論）を選択してください</p>
+            <div class="triangle"></div>
+            <div id="select_result"></div>
+            <div class="select_button"><a onclick="submit()">選択する</a></div>
+          </form>
+        </div>
+        <div class="black-bg" id="select_bg"></div>
+      </div>
+      <div class="name_file" id="file_name">選択ファイル</div>
+    </div>
+    <div id="buttons-container"></div>
+    <div id="main">
+      <!-- ボタンを表示する場所の要素 -->
+      
+    </div>
+  </div>
+
+  <script>
+    var result_num = "";
+    var array = [];
+    var columns = [];
+    var index = [];
+    function submit(arr){
+      let results = document.getElementsByName('results');
+      for (let i = 0; i < results.length; i++){
+        if (results.item(i).checked){
+          result_num = i;
+        }
+      }
+      change_file_name();
+      work_popup();
+
+
+      for (var i = 0; i < array.length; i++) {
+        array[i].push(array[i][result_num]);
+        array[i].splice(result_num, 1)
+      }
+      columns.push(columns[result_num]);
+      columns.splice(result_num, 1);
+      reset_all();
+      js_to_py(array, index, columns);
+    }
+
+    //HTMLリセット
+    function reset_all(){
+      const main = document.getElementById('main');
+      while(main.lastChild){
+        main.removeChild(main.lastChild);
+      }
+    }
+
+
+    //INPUPTファイルのID
+    const input = document.getElementById('upload_file');
+     //FileReaderの定義
+    const reader = new FileReader();
+    //ファイルのクリックイベント
+    input.addEventListener('click', (e) => {
+      e.target.value = '';
+    })
+    //ファイルのチェンジイベント
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      //CSVファイルに絞る
+      if (file.type === 'text/csv') {
+        reader.readAsText(file, 'Shift_JIS');
+      } else {
+        alert("CSVファイルのみ対応しています。")
+      }
+    });
+
+    //ファイルの読み込み成功時
+    reader.onload = function () {
+      work_popup();
+      array = [];
+      columns = [];
+      index = [];
+      // 行単位で配列にする
+      var line_arr = reader.result.split('\r\n');
+      // 行と列の二次元配列にする
+      for (var i = 0; i < line_arr.length - 1; i++) {
+        array[i] = line_arr[i].split(',');
+        index.push(array[i].shift())
+      }
+      //カラムへ配列の作成
+      columns = array.shift()
+      //結論選択のラジオボタンのリセット
+      const select = document.getElementById('select_result');
+      while(select.lastChild){
+        select.removeChild(select.lastChild);
+      }
+      //結論選択のラジオボタン作成
+      for (var i = 0; i < columns.length; i++) {
+        select.innerHTML += `<label class="radio-label"><input type="radio" name="results" value="${columns[i]}" checked><span class="radio-text">${columns[i]}</span></label>`
+      }
+
+      //インデックス配列の作成
+      index.shift();
+    }
+
+    //選択されたファイル名の表示
+    function change_file_name() {
+      const file =  document.getElementById("upload_file").files[0]
+      document.getElementById("file_name").innerHTML = `${file.name}`;
+    }
+
+    function work_popup() {
+      var popup = document.getElementById('popup_id');
+      if(!popup) return;
+
+      var select_bg = document.getElementById('select_bg');
+      var close_btn_id = document.getElementById('close_btn_id');
+      var upload_file = document.getElementById('upload_file');
+
+      close_popup(select_bg);
+      close_popup(close_btn_id);
+      close_popup(upload_file);
+      function close_popup() {
+        popup.classList.toggle('is_show');
+      }
+    }
+  </script>
+
+  <!--パン・ズーム機能を実装したい
+  <script src="https://unpkg.com/panzoom@9.4.3/dist/panzoom.min.js"></script>
+  <script>
+    const panzoomEl = document.getElementById('#main');
+    const instance = panzoom(panzoomEl);
+  </script>-->
+
+  <!--<script>
+    // ボタンに表示するラベルの配列
+    var labels = ["ボタン1", "ボタン2", "ボタン3", "ボタン4", "ボタン5"];
+
+    // ボタンを表示する要素を取得
+    var container = document.getElementById("buttons-container");
+
+    // 配列の要素をラベルとするボタンを作成して要素に追加する
+    labels.forEach(function(label) {
+        var button = document.createElement("button"); // ボタン要素を作成
+        button.innerHTML = label; // ボタンのラベルを設定
+        button.addEventListener("click", function() {
+            alert("ボタン「" + label + "」がクリックされました！"); // ボタンがクリックされた時の処理
+        });
+        container.appendChild(button); // ボタンを要素に追加
+    });
+  </script>-->
+  
+
+  <!--function.jsファイルを読み込む-->
+  <script type="text/javascript" src="/function.js"></script>
+
+  
+  <!--ネットワークの描画部分-->
+  <!--<script type="text/javascript" src="/network.js"></script>-->
+  
+
+
+
+
+
+</body>
+</html>
